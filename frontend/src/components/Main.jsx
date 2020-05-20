@@ -1,4 +1,5 @@
 import React from 'react';
+import axios from 'axios';
 
 class Main extends React.Component {
   constructor(props) {
@@ -15,17 +16,17 @@ class Main extends React.Component {
     ev.preventDefault();
 
     const data = new FormData();
-    data.append('file', this.uploadInput.files[0]);
-    data.append('filename', this.fileName.value);
-
-    fetch('http://localhost:8000/upload', {
-      method: 'POST',
+    const formData = new FormData();
+    const uploadedFile = this.uploadInput.files[0];
+    data.append('file', uploadedFile);
+    data.append('filename', uploadedFile.name);
+    axios.post('http://localhost:8000/upload', {
       body: data,
     }).then((response) => {
-      response.json().then((body) => {
-        console.log(body);
-        this.setState({ imageURL: `http://localhost:8000/${body.file}` });
-      });
+      console.log(response.data);
+    }).catch(err => {
+      console.log('err');
+
     });
   }
 
@@ -33,7 +34,7 @@ class Main extends React.Component {
     return (
       <form onSubmit={this.handleUploadImage}>
         <div>
-          <input ref={(ref) => { this.uploadInput = ref; }} type="file" />
+          <input ref={(ref) => { this.uploadInput = ref; }} type="file" accept=".txt" />
         </div>
         <div>
           <input ref={(ref) => { this.fileName = ref; }} type="text" placeholder="Enter the desired name of file" />
