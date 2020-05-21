@@ -6,7 +6,7 @@ class Main extends React.Component {
     super(props);
 
     this.state = {
-      imageURL: '',
+      selectedFile: null,
     };
 
     this.handleUploadImage = this.handleUploadImage.bind(this);
@@ -15,26 +15,24 @@ class Main extends React.Component {
   handleUploadImage(ev) {
     ev.preventDefault();
 
-    const data = new FormData();
-    const formData = new FormData();
-    const uploadedFile = this.uploadInput.files[0];
-    data.append('file', uploadedFile);
-    data.append('filename', uploadedFile.name);
-    axios.post('http://localhost:8000/upload', {
-      body: data,
-    }).then((response) => {
-      console.log(response.data);
-    }).catch(err => {
-      console.log('err');
-
-    });
+    const data = new FormData()
+    data.append('file', this.state.selectedFile)
+    axios.post("http://localhost:8000/upload", data, {
+      // receive two    parameter endpoint url ,form data
+    }).then(res => { // then print response status
+      console.log(res.statusText)
+    })
   }
-
+  onChangeHandler = event => {
+    this.setState({
+      selectedFile: event.target.files[0]
+    })
+  }
   render() {
     return (
       <form onSubmit={this.handleUploadImage}>
         <div>
-          <input ref={(ref) => { this.uploadInput = ref; }} type="file" accept=".txt" />
+          <input onChange={this.onChangeHandler} type="file" accept=".txt" />
         </div>
         <div>
           <input ref={(ref) => { this.fileName = ref; }} type="text" placeholder="Enter the desired name of file" />

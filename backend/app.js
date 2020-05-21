@@ -1,43 +1,37 @@
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-const fs = require('fs');
-
-var logger = require('morgan');
-var cors = require('cors');
+var express = require("express");
 var app = express();
-var indexRouter = require('./routes/index');
+var bodyParser = require("body-parser");
+var fs = require("fs");
+var multer = require("multer");
+var path = require("path");
 
-var usersRouter = require('./routes/users');
-// var uploadRouter = require('./routes/upload');
+let fileName = "";
+// Create application/x-www-form-urlencoded parser
+var urlencodedParser = bodyParser.urlencoded({ extended: false });
 
-var multer = require('multer');
-var storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, 'upload')
+app.use(express.static("public"));
+var Storage = multer.diskStorage({
+    destination: function (req, file, callback) {
+        callback(null, "./upload");
     },
-    filename: function (req, file, cb) {
-        console.log('file ' + JSON.stringify(file));
-
-        cb(null, "dummy.txt")
+    filename: function (req, file, callback) {
+        fileName = "dummy.txt";
+        callback(null, fileName);
     }
+});
+
+
+
+var upload = multer({
+    storage: Storage
+}).array("file", 3); //Field name and max count
+
+app.get('/', function (req, res) {
+    res.send('home');
 })
 
-var upload = multer({ storage: storage }).single('file')
-
-app.use(logger('dev'));
-app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-app.set('view engine', 'html');
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
-// app.use('/upload', uploadRouter);
-
-
-app.post('/upload', function (req, res) {
+app.post("/upload", function (req, res) {
+    // console.log("file upload", req);
 
     upload(req, res, function (err) {
         if (err instanceof multer.MulterError) {
@@ -49,12 +43,16 @@ app.post('/upload', function (req, res) {
         fs.readFile('upload/dummy.txt', 'utf8', function (err, data) {
             if (err) throw err;
             console.log(data);
-            return res.status(200).send(data);
+            return res.send(data);
         });
 
 
     })
-
 });
 
-module.exports = app;
+var server = app.listen(8000, function () {
+    var host = server.address().address;
+    var port = server.address().port;
+
+    console.log("Example app listening at http://%s:%s", host, port);
+});
