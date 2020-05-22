@@ -38,12 +38,12 @@ class Main extends React.Component {
   formDisplay() {
     return (<form onSubmit={this.handleUploadImage}>
       <div>
-        <input onChange={this.onChangeHandler} type="file" accept=".txt" />
+        <input onChange={this.onChangeHandler} className="form-control-file" type="file" accept=".txt" />
       </div>
 
       <br />
       <div>
-        <button>Upload</button>
+        <button className="btn btn-primary">Upload</button>
       </div>
     </form>)
   }
