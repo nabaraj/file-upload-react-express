@@ -2,14 +2,15 @@ var express = require("express");
 var app = express();
 var bodyParser = require("body-parser");
 var fs = require("fs");
+var cors = require('cors');
 var multer = require("multer");
 var path = require("path");
 
 let fileName = "";
 // Create application/x-www-form-urlencoded parser
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
+app.use(cors());
 
-app.use(express.static("public"));
 var Storage = multer.diskStorage({
     destination: function (req, file, callback) {
         callback(null, "./upload");

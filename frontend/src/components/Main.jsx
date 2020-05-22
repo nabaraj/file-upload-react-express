@@ -1,5 +1,6 @@
 import React from 'react';
 import axios from 'axios';
+import TableComponent from './TableComponent';
 
 class Main extends React.Component {
   constructor(props) {
@@ -7,12 +8,15 @@ class Main extends React.Component {
 
     this.state = {
       selectedFile: null,
+      data: ""
     };
 
     this.handleUploadImage = this.handleUploadImage.bind(this);
+    this.formDisplay = this.formDisplay.bind(this);
   }
 
   handleUploadImage(ev) {
+
     ev.preventDefault();
 
     const data = new FormData()
@@ -21,6 +25,9 @@ class Main extends React.Component {
       // receive two    parameter endpoint url ,form data
     }).then(res => { // then print response status
       console.log(res.statusText)
+      this.setState({
+        data: res.data
+      })
     })
   }
   onChangeHandler = event => {
@@ -28,22 +35,23 @@ class Main extends React.Component {
       selectedFile: event.target.files[0]
     })
   }
+  formDisplay() {
+    return (<form onSubmit={this.handleUploadImage}>
+      <div>
+        <input onChange={this.onChangeHandler} type="file" accept=".txt" />
+      </div>
+
+      <br />
+      <div>
+        <button>Upload</button>
+      </div>
+    </form>)
+  }
   render() {
-    return (
-      <form onSubmit={this.handleUploadImage}>
-        <div>
-          <input onChange={this.onChangeHandler} type="file" accept=".txt" />
-        </div>
-        <div>
-          <input ref={(ref) => { this.fileName = ref; }} type="text" placeholder="Enter the desired name of file" />
-        </div>
-        <br />
-        <div>
-          <button>Upload</button>
-        </div>
-        <img src={this.state.imageURL} alt="img" />
-      </form>
-    );
+    let { data } = this.state;
+    return (data ? <TableComponent data={this.state.data} /> : <this.formDisplay></this.formDisplay>
+    )
+
   }
 }
 
